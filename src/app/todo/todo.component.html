@@ -2,25 +2,62 @@
   <section class="todo-container">
     <h1>Todo List</h1>
     <h3>A place to store your todos</h3>
+
     <!-- form is the parent to button && list -->
-    <form class="form">
-      <input type="text" placeholder="Filter your to-dos" />
+    <!--ngModel is used for forms, what you need  -->
+    <form #filterForm="ngForm" (input)="setSearchTerm(filterForm)" class="form">
+      <label for="searchTerm"></label>
+      <input
+        type="text"
+        name="searchTerm"
+        id="searchTerm"
+        placeholder="Filter your to-dos"
+        ngModel
+      />
     </form>
+    <!-- when there's no todos left, extended for pt1-->
+    <p *ngIf="todos.length === 0">Enter some todos</p>
     <ol class="ordered-list">
-      <li *ngFor="let todo of todos">
+      <!-- for the filter(searchterm) -->
+      <li *ngFor="let todo of filter(); index as i">
         <div class="list-item">
-          <button class="complete" *ngIf="todo.completed === false">
+          <button
+            class="complete"
+            *ngIf="todo.completed === false"
+            (click)="completeTask(i)"
+          >
             Complete
           </button>
-          <p class="task" [ngClass]="{ strike: todo.completed }">
+
+          <p
+            *ngIf="showIndex !== i"
+            class="task"
+            [ngClass]="{ strike: todo.completed }"
+            (click)="setShowIndex(i)"
+          >
             {{ todo.task }}
           </p>
-          <button>X</button>
+          <form *ngIf="showIndex === i" (ngSubmit)="resetShowIndex()">
+            <input type="text" name="update" [(ngModel)]="todo.task" />
+          </form>
+          <button (click)="removeTask(i)">X</button>
         </div>
       </li>
     </ol>
-    <form class="form">
-      <input type="text" placeholder="Add your to-do" class="todo" />
+    <main>
+      <div class="todo"></div>
+    </main>
+    <!-- adding so I can add to the form -->
+    <form class="form" #addTodo="ngForm" (ngSubmit)="submitForm(addTodo)">
+      <label for="task"></label>
+      <input
+        type="text"
+        id="task"
+        name="task"
+        placeholder="Add your to-do"
+        class="todo"
+        ngModel
+      />
       <button class="add">Add</button>
     </form>
   </section>
